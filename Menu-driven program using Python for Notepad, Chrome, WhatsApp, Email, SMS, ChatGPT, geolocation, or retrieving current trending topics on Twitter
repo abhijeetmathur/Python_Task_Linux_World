@@ -1,0 +1,130 @@
+import os
+import webbrowser
+import smtplib
+import pywhatkit
+import openai
+import psutil
+import requests
+import json
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+openai.api_key = "your_openai_api_key_here"
+
+def open_notepad():
+    if psutil.WINDOWS:
+        os.system("notepad")
+    elif psutil.LINUX:
+        os.system("gedit")
+    elif psutil.MACOS:
+        os.system("open -a TextEdit")
+    else:
+        print("Notepad is not supported on this platform.")
+
+def open_chrome():
+    if psutil.WINDOWS:
+        os.system("start chrome")
+    elif psutil.LINUX:
+        os.system("google-chrome")
+    elif psutil.MACOS:
+        os.system("open -a 'Google Chrome'")
+    else:
+        print("Chrome is not supported on this platform.")
+
+def send_whatsapp_message():
+    phone_number = input("Enter phone number (with country code): ")
+    message = input("Enter the message: ")
+    pywhatkit.sendwhatmsg_instantly(phone_number, message)
+    print("Message sent successfully!")
+
+def send_email():
+    sender_email = input("Enter your email: ")
+    sender_password = input("Enter your email password: ")
+    recipient_email = input("Enter recipient email: ")
+    subject = input("Enter subject: ")
+    message = input("Enter message: ")
+
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(message, 'plain'))
+
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
+
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+def send_sms():
+    print("Sending SMS is not implemented in this example.")
+    print("You'll need to use an SMS API like Twilio to send SMS.")
+
+def chat_with_gpt():
+    prompt = input("Ask ChatGPT something: ")
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+        )
+        print(f"ChatGPT: {response['choices'][0]['message']['content']}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+def get_geolocation():
+    try:
+        response = requests.get('http://ip-api.com/json/')
+        data = response.json()
+        print(f"Your Location: {data['city']}, {data['regionName']}, {data['country']}")
+        print(f"Latitude: {data['lat']}, Longitude: {data['lon']}")
+    except Exception as e:
+        print(f"Error retrieving geolocation: {e}")
+
+def get_trending_topics():
+    print("Fetching trending topics from Twitter is not implemented in this example.")
+    print("You'll need to use the Twitter API to retrieve trending topics.")
+
+def menu():
+    while True:
+        print("\n--- Main Menu ---")
+        print("1. Open Notepad")
+        print("2. Open Chrome")
+        print("3. Send WhatsApp Message")
+        print("4. Send Email")
+        print("5. Send SMS")
+        print("6. Chat with GPT")
+        print("7. Get Geolocation")
+        print("8. Get Twitter Trending Topics")
+        print("9. Exit")
+        
+        choice = input("Enter your choice (1-9): ")
+
+        if choice == "1":
+            open_notepad()
+        elif choice == "2":
+            open_chrome()
+        elif choice == "3":
+            send_whatsapp_message()
+        elif choice == "4":
+            send_email()
+        elif choice == "5":
+            send_sms()
+        elif choice == "6":
+            chat_with_gpt()
+        elif choice == "7":
+            get_geolocation()
+        elif choice == "8":
+            get_trending_topics()
+        elif choice == "9":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+menu()
+
