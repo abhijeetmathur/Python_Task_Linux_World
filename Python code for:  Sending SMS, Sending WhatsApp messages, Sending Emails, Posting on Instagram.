@@ -1,0 +1,91 @@
+sending sms
+
+	from twilio.rest import Client
+
+	# Twilio credentials
+	account_sid = 'your_account_sid'
+	auth_token = 'your_auth_token'
+	twilio_phone_number = 'your_twilio_phone_number'
+	client = Client(account_sid, auth_token)
+
+	def send_sms(to_phone_number, message):
+    	    message = client.messages.create(
+            body=message,
+            from_=twilio_phone_number,
+            to=to_phone_number
+        )
+    	print(f"Message sent with ID: {message.sid}")
+
+	# Usage
+	send_sms('+1234567890', 'Hello! This is a test SMS.')
+
+
+
+Sending WhatsApp messages 
+
+	from twilio.rest import Client
+
+	# Twilio credentials
+	account_sid = 'your_account_sid'
+	auth_token = 'your_auth_token'
+	client = Client(account_sid, auth_token)
+
+	def send_whatsapp(to_phone_number, message):
+    	    message = client.messages.create(
+            body=message,
+            from_='whatsapp:+your_twilio_whatsapp_number',
+            to=f'whatsapp:{to_phone_number}'
+        )
+        print(f"WhatsApp message sent with ID: {message.sid}")
+
+        # Usage
+        send_whatsapp('+1234567890', 'Hello! This is a test WhatsApp message.')
+
+
+
+Sending Emails
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+def send_email(sender_email, sender_password, recipient_email, subject, message):
+    # Create the email message
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(message, 'plain'))
+    
+    try:
+        # Set up the server and send the email
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        text = msg.as_string()
+        server.sendmail(sender_email, recipient_email, text)
+        server.quit()
+        print(f"Email sent to {recipient_email}!")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+# Usage
+send_email('your_email@gmail.com', 'your_password', 'recipient@example.com', 'Subject Test', 'This is a test email.')
+
+
+
+
+Posting on Instagram
+
+from instabot import Bot
+
+# Function to post image with caption
+def post_to_instagram(username, password, image_path, caption):
+    bot = Bot()
+    bot.login(username=username, password=password)
+    bot.upload_photo(image_path, caption=caption)
+    bot.logout()
+
+# Usage
+post_to_instagram('your_username', 'your_password', 'path_to_image.jpg', 'This is a test post!')
+
