@@ -1,0 +1,53 @@
+pip install openai
+
+import openai
+
+openai.api_key = "your_openai_api_key_here"
+
+def ask_chatgpt(prompt):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=150
+        )
+        
+        return response['choices'][0]['message']['content']
+    
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+user_prompt = "What is the capital of France?"
+response = ask_chatgpt(user_prompt)
+print("ChatGPT Response:", response)
+
+conversation = [
+    {"role": "user", "content": "Tell me a joke."},
+    {"role": "assistant", "content": "Why don’t scientists trust atoms? Because they make up everything!"}
+]
+
+def continue_conversation(new_message):
+    conversation.append({"role": "user", "content": new_message})
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=conversation
+    )
+    
+    assistant_message = response['choices'][0]['message']['content']
+    conversation.append({"role": "assistant", "content": assistant_message})
+    
+    return assistant_message
+
+print(continue_conversation("Tell me another one!"))
+
+try:
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": "Hello, ChatGPT!"}],
+    )
+except openai.error.RateLimitError as e:
+    print(f"Rate limit exceeded: {e}")
+except openai.error.OpenAIError as e:
+    print(f"API error: {e}")
